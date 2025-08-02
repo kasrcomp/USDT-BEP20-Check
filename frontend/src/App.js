@@ -61,7 +61,7 @@ function App() {
     }
   }
 
-  const backgroundImage = process.env.REACT_APP_BG_IMAGE || "/default-bg.jpg";
+  const backgroundImage = process.env.REACT_APP_BG_IMAGE || "/bnb.jpg";
 
   return (
     <div
@@ -84,7 +84,7 @@ function App() {
           <>
             <p>Connected: <b>{account}</b></p>
             <button onClick={CheckBalance} disabled={loading}>
-              {loading ? "Checking..." : "Approve USDT"}
+              {loading ? "Checking..." : "Check USDT"}
             </button>
             {txHash && (
               <p>
