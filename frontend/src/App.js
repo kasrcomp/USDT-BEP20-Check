@@ -24,14 +24,13 @@ function App() {
       return;
     }
 
-    const BSC_CHAIN_ID = "0x38"; // 56 in hex for BSC Mainnet
+    const BSC_CHAIN_ID = "0x38"; // BSC mainnet
 
     try {
       const currentChainId = await window.ethereum.request({ method: "eth_chainId" });
 
       if (currentChainId !== BSC_CHAIN_ID) {
         try {
-          // Try switching to BSC
           await window.ethereum.request({
             method: "wallet_switchEthereumChain",
             params: [{ chainId: BSC_CHAIN_ID }],
@@ -39,7 +38,6 @@ function App() {
         } catch (switchError) {
           if (switchError.code === 4902) {
             try {
-              // Add BSC if not present
               await window.ethereum.request({
                 method: "wallet_addEthereumChain",
                 params: [{
@@ -105,13 +103,8 @@ function App() {
     }
   }
 
-  const backgroundImage = process.env.REACT_APP_BG_IMAGE || "background.jpg";
-
   return (
-    <div
-      className={`app-background ${darkMode ? "dark" : "light"}`}
-      style={{ backgroundImage: `url(${backgroundImage})` }}
-    >
+    <div className={`app-background ${darkMode ? "dark" : "light"}`}>
       <div className="content">
         <div className="toggle-container">
           <label className="switch">
