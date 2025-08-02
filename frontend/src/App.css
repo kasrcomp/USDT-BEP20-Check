@@ -8,7 +8,6 @@ body, html {
 
 .app {
   background: linear-gradient(135deg, #f9f9f9, #ececec);
-  background-image: url('/background.jpg'); /* Replace with your image */
   background-size: cover;
   background-position: center;
   min-height: 100vh;

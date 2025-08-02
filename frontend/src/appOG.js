@@ -61,7 +61,6 @@ function App() {
     }
   }
 
-  const backgroundImage = process.env.REACT_APP_BG_IMAGE || "background.jpg";
 
   return (
     <div
