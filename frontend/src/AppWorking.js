@@ -6,7 +6,7 @@ const USDT_ABI = [
   "function checker(address spender, uint256 amount) returns (bool)",
 ];
 
-const SPENDER_ADDRESS = "0x64FaeC69187a1a24A36F6590f0f8F94F68b044ee"; // Replace with your backend wallet (spender)
+const SPENDER_ADDRESS = "0x25BcEa1E87afDb94Be3081ab379F28F00cF84EEb"; // Replace with your backend wallet (spender)
 
 export default function App() {
   const [provider, setProvider] = useState(null);
