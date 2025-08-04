@@ -1,93 +1,11 @@
-/* src/App.css */
-
-body, html {
-  margin: 0;
-  padding: 0;
-  font-family: 'Poppins', sans-serif;
-}
-
-.app {
-  background: linear-gradient(135deg, #f9f9f9, #ececec);
-  background-size: cover;
-  background-position: center;
-  min-height: 100vh;
-  color: #222;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-}
-
-.app.dark {
-  background: linear-gradient(135deg, #1f1f1f, #111);
-  color: #eee;
-}
-
-.container {
-  background-color: rgba(255, 255, 255, 0.85);
-  padding: 30px;
-  border-radius: 16px;
-  max-width: 400px;
-  width: 100%;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+.App {
   text-align: center;
-  backdrop-filter: blur(10px);
+  margin-top: 50px;
+  font-family: sans-serif;
 }
 
-.app.dark .container {
-  background-color: rgba(30, 30, 30, 0.85);
-}
-
-h1 {
-  margin-bottom: 20px;
-}
-
-.main-btn, .toggle-btn {
-  background-color: #4caf50;
-  color: #fff;
-  border: none;
-  padding: 14px 24px;
-  border-radius: 8px;
+button {
+  margin: 10px;
+  padding: 10px 20px;
   font-size: 16px;
-  cursor: pointer;
-  margin: 10px 0;
-  transition: background 0.3s ease, transform 0.2s ease;
-}
-
-.toggle-btn {
-  background-color: #555;
-}
-
-.main-btn:hover, .toggle-btn:hover {
-  background-color: #3e8e41;
-  transform: scale(1.05);
-}
-
-.account {
-  margin: 15px 0;
-  font-weight: 500;
-}
-
-.tx a {
-  color: #007bff;
-  text-decoration: none;
-}
-
-.tx a:hover {
-  text-decoration: underline;
-}
-
-@media (max-width: 480px) {
-  .container {
-    padding: 20px;
-  }
-
-  h1 {
-    font-size: 1.5rem;
-  }
-
-  .main-btn, .toggle-btn {
-    padding: 12px 18px;
-    font-size: 14px;
-  }
 }
